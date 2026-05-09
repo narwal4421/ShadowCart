@@ -1,47 +1,42 @@
 # ShadowCart 👻
+### Shop Like a Ghost. Save Like a Legend.
 
-A privacy-first browser extension that adds intentional friction to impulse purchases across all e-commerce sites.
+**Most e-commerce sites are designed to trap you.** They force you to create accounts, sign up for newsletters, and store your credit card just so you can save a single item to a cart. They want you to make an impulse purchase before you have time to think.
 
-## Features
+**ShadowCart is your defense.** It’s a universal, stealth-mode cart that follows you everywhere you shop. No signups. No friction. No tracking. Just one place for everything you want, protected by a 48-hour cooling-off period that saves you from yourself.
 
-- Intercepts "Add to Cart" buttons.
-- Captures the mood behind your purchase.
-- Holds items in a "Pending" state for 48 hours.
-- Reminds you to review your items, giving you the choice to buy or drop them.
-- All data is stored locally in IndexedDB. No backend, no accounts, 100% private.
+---
 
-## Tech Stack
+## 🔥 The Superpowers
 
-- React + Vite + TypeScript
-- Tailwind CSS
-- Manifest V3 Service Worker + Content Scripts
-- IndexedDB (via `idb`)
+- **Universal Interception:** ShadowCart is a ghost in the machine. It detects "Add to Cart" buttons on almost any site on the planet and intercepts them before the store even knows you're there.
+- **Escape the Signup Trap:** Stop giving away your email and creating passwords. Save products from *any* boutique store without ever creating an account. 
+- **The 48-Hour Rule:** Every item you "Shadow" enters a 48-hour cooling period. If you still want it after 2 days, you buy it. If not, you just saved yourself from a regret purchase.
+- **Mood Metrics:** Tag your state of mind. Were you shopping out of *Boredom*? *FOMO*? *Stress*? ShadowCart helps you hack your own psychology.
+- **Stealth Reminders:** Get a discrete email (via Brevo) when your cooling period ends. Your future self will thank you.
+- **Total Local Sovereignty:** We don't want your data. Your shopping history is stored locally on your machine. You own it. No one else.
 
-## Installation
+---
 
-### For Chrome (Developer Mode)
+## 🛠️ The Spec Ops Tech Stack
 
-1. Clone this repository or download the source code.
-2. Run `npm install` to install dependencies.
-3. Run `npm run build`. This will generate a `dist` folder.
-4. Open Chrome and navigate to `chrome://extensions`.
-5. Enable **Developer mode** in the top right corner.
-6. Click **Load unpacked** and select the `dist` folder.
+Built for speed, stealth, and total reliability.
 
-### For Firefox (Developer Mode)
+- **React 19 & TypeScript:** A high-end, responsive engine.
+- **Vite & CRXJS:** The fastest extension build system in existence.
+- **TailwindCSS:** Sleek, dark-mode "Linear" aesthetic.
+- **Vercel & Brevo Cloud:** Serverless cloud infrastructure for stealthy email reminders.
+- **IndexedDB:** Military-grade local data persistence.
 
-1. Follow steps 1-3 above to build the extension.
-2. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`.
-3. Click **Load Temporary Add-on...**
-4. Select the `manifest.json` file inside the `dist` folder.
+---
 
-## Development
+## 📦 Deploy the Ghost
 
-To run the extension in development mode with Hot Module Replacement (HMR):
+1. `git clone https://github.com/narwal4421/ShadowCart`
+2. `npm install`
+3. `npm run build`
+4. Load the `dist` folder into Chrome as an **Unpacked Extension**.
 
-1. Run `npm run dev`.
-2. Load the `dist` directory into Chrome as described above. The CRXJS Vite plugin will automatically handle reloading the extension when you make changes.
+---
 
-## License
-
-MIT
+### *The internet wants your money. ShadowCart wants your peace of mind. Join the shadows.* 👻💰
