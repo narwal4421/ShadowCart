@@ -85,7 +85,16 @@ export default async function handler(req, res) {
     return res.status(429).json({ error: 'Too many reminder requests. Please try again later.' });
   }
 
-  const { email, item } = req.body || {};
+  let body = req.body;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      body = {};
+    }
+  }
+
+  const { email, item } = body || {};
   const normalizedEmail = String(email || '').trim();
   const normalizedItem = normalizeItem(item);
 
