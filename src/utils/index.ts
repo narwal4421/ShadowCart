@@ -1,5 +1,46 @@
 import type { ShadowCartItem } from '../types';
 
+// ─── Affiliate configuration ────────────────────────────────────────────────
+const AFFILIATE_CONFIG = {
+  amazon: {
+    tag: 'shadowcart0c-21',
+    domains: ['amazon.in', 'amazon.com', 'amazon.co.uk', 'amzn.to', 'amzn.in'],
+  },
+  // Flipkart affiliate ID — add here once registered
+  // flipkart: { id: '', domains: ['flipkart.com'] },
+};
+
+/**
+ * Wraps a product URL with the appropriate affiliate tag.
+ * Falls back to the original URL if the domain has no affiliate program.
+ */
+export function getAffiliateUrl(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl);
+    const hostname = url.hostname.replace('www.', '');
+
+    // Amazon
+    if (AFFILIATE_CONFIG.amazon.domains.some(d => hostname === d || hostname.endsWith('.' + d))) {
+      url.searchParams.set('tag', AFFILIATE_CONFIG.amazon.tag);
+      // Remove conflicting params that break affiliate attribution
+      url.searchParams.delete('ref');
+      url.searchParams.delete('linkCode');
+      return url.toString();
+    }
+
+    // Flipkart (uncomment when ID is ready)
+    // if (hostname.includes('flipkart.com')) {
+    //   url.searchParams.set('affid', AFFILIATE_CONFIG.flipkart.id);
+    //   return url.toString();
+    // }
+
+    return rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
+
 export function timeAgo(timestamp: number): string {
   const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
   if (seconds < 60) return `${seconds}s ago`;

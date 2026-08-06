@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import browser from 'webextension-polyfill';
 import { getAllItems, updateItemStatus, initDB, snoozeItem } from '../db';
 import type { ShadowCartItem } from '../types';
+import { getAffiliateUrl } from '../utils';
 import { CartItem } from './components/CartItem';
 import { Dashboard } from './components/Dashboard';
 import { ManualAddModal } from './components/ManualAddModal';
@@ -68,7 +69,7 @@ export default function App() {
 
   const handleBuy = async (id: string, url: string) => {
     await updateItemStatus(id, 'bought');
-    browser.tabs.create({ url });
+    browser.tabs.create({ url: getAffiliateUrl(url) });
     await loadItems(false);
   };
 

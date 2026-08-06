@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 import { initDB, saveItem, getItemsByStatus, updateItemStatus, markAsNotified, getItemById, getPendingCount, getSettings, snoozeItem } from '../db';
 import { CONFIG } from '../config';
+import { getAffiliateUrl } from '../utils';
 import type { ShadowCartItem } from '../types';
 
 type SaveItemResponse = {
@@ -194,7 +195,7 @@ browser.notifications.onClicked.addListener(async (notifId) => {
   const realId = getItemIdFromNotification(notifId);
   const item = await getItemById(realId);
   if (item) {
-    await browser.tabs.create({ url: item.productUrl });
+    await browser.tabs.create({ url: getAffiliateUrl(item.productUrl) });
   }
   browser.notifications.clear(notifId);
 });
