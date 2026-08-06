@@ -8,6 +8,11 @@ const SELECTORS = [
   'button[aria-label*="add to cart" i]',
   'button[aria-label*="Add to Bag" i]',
   'button[data-action="add-to-cart"]',
+  '.add-to-cart-button',           // General
+  '.add-to-bag-button',
+  '#add-to-bag',
+  'button.add-to-bag',
+  'button.add-to-cart'
 ];
 
 const NAME_SELECTORS = [
@@ -47,11 +52,66 @@ function scrapeElement(selectors: string[], attr: string = 'innerText'): string 
   return '';
 }
 
+function findJsonLdPrice(value: unknown): string {
+  if (!value || typeof value !== 'object') return '';
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const price = findJsonLdPrice(item);
+      if (price) return price;
+    }
+    return '';
+  }
+
+  const data = value as Record<string, unknown>;
+  const type = Array.isArray(data['@type']) ? data['@type'].join(' ') : String(data['@type'] || '');
+  const price = data.price || data.lowPrice || data.highPrice;
+
+  if (price && /offer|product|aggregaterating/i.test(type)) {
+    const currency = typeof data.priceCurrency === 'string' ? data.priceCurrency : '';
+    return `${currency ? `${currency} ` : ''}${String(price)}`.trim();
+  }
+
+  const offers = findJsonLdPrice(data.offers);
+  if (offers) return offers;
+
+  const priceSpecification = findJsonLdPrice(data.priceSpecification);
+  if (priceSpecification) return priceSpecification;
+
+  const graph = findJsonLdPrice(data['@graph']);
+  if (graph) return graph;
+
+  for (const child of Object.values(data)) {
+    const nested = findJsonLdPrice(child);
+    if (nested) return nested;
+  }
+
+  return '';
+}
+
+function scrapeJsonLdPrice(): string {
+  const scripts = document.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]');
+  for (const script of scripts) {
+    const json = script.textContent?.trim();
+    if (!json) continue;
+
+    try {
+      const price = findJsonLdPrice(JSON.parse(json));
+      if (price) return price;
+    } catch {
+      // Some sites ship malformed schema; selectors still get a chance below.
+    }
+  }
+
+  return '';
+}
+
 function scrapeData() {
   const name = scrapeElement(NAME_SELECTORS) || document.title;
   let price = scrapeElement(PRICE_SELECTORS);
+  if (!price) price = scrapeJsonLdPrice();
   if (!price) price = "Price unavailable";
-  
+
   let imageUrl = scrapeElement(IMAGE_SELECTORS.slice(0, 4), 'src');
   if (!imageUrl) imageUrl = scrapeElement(["meta[property='og:image']"], 'content');
   if (!imageUrl) imageUrl = "";
@@ -74,7 +134,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
   modalContainer.style.opacity = '0';
   modalContainer.style.transform = 'translateY(20px)';
   modalContainer.style.transition = 'opacity 250ms ease, transform 250ms ease';
-  
+
   const shadowRoot = modalContainer.attachShadow({ mode: 'closed' });
 
   const wrapper = document.createElement('div');
@@ -102,7 +162,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
     padding-bottom: 16px;
     border-bottom: 1px solid #2e2e2e;
   `;
-  
+
   const img = document.createElement('img');
   img.src = product.imageUrl || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // empty fallback
   img.style.cssText = `
@@ -112,7 +172,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
     object-fit: cover;
     background: #2a2a2a;
   `;
-  
+
   const nameEl = document.createElement('div');
   nameEl.innerText = product.name;
   nameEl.style.cssText = `
@@ -132,7 +192,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
   const title = document.createElement('div');
   title.innerText = 'Added to ShadowCart \uD83D\uDC7B';
   title.style.cssText = `font-size: 15px; font-weight: 600;`;
-  
+
   const subtitle = document.createElement('div');
   subtitle.innerText = 'Quick — why do you want this?';
   subtitle.style.cssText = `font-size: 12px; color: #888888; margin-top: 4px; margin-bottom: 16px;`;
@@ -161,7 +221,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
   const handleSelect = (mood: MoodTag) => {
     if (dismissed) return;
     dismissed = true;
-    
+
     browser.runtime.sendMessage({
       type: "SAVE_ITEM",
       payload: {
@@ -172,6 +232,8 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
         siteName: window.location.hostname.replace("www.", ""),
         mood,
       }
+    }).catch(err => {
+      console.warn("ShadowCart: Extension context invalidated or failed to save item", err);
     });
 
     if (modalContainer) {
@@ -183,7 +245,7 @@ function injectMoodModal(product: { name: string, price: string, imageUrl: strin
 
   moodOptions.forEach(opt => {
     const btn = document.createElement('button');
-    btn.innerHTML = `${opt.emoji} ${opt.label}`;
+    btn.textContent = `${opt.emoji} ${opt.label}`;
     btn.style.cssText = `
       background: #2a2a2a;
       border: 1px solid #3a3a3a;
@@ -271,8 +333,16 @@ function handleAddToCartClick() {
   injectMoodModal(data);
 }
 
-function attachListeners() {
-  const buttons = document.querySelectorAll(SELECTORS.join(', '));
+function getMatches(root: ParentNode, selector: string): Element[] {
+  const matches = Array.from(root.querySelectorAll(selector));
+  if (root instanceof Element && root.matches(selector)) {
+    matches.unshift(root);
+  }
+  return matches;
+}
+
+function attachListeners(root: ParentNode = document) {
+  const buttons = getMatches(root, SELECTORS.join(', '));
   buttons.forEach(btn => {
     if (!btn.hasAttribute('data-shadowcart-attached')) {
       btn.addEventListener('click', handleAddToCartClick);
@@ -280,14 +350,18 @@ function attachListeners() {
     }
   });
 
-  // Generic fallback
-  const allButtons = document.querySelectorAll('button, a[role="button"], div[role="button"]');
-  const genericRegex = /add to cart|add to bag|add to basket|buy now|add to trolley/i;
+  // Generic fallback: Look at text of all buttons and links
+  const allButtons = getMatches(root, 'button, a, div[role="button"], span[role="button"]');
+  const genericExactRegex = /^(add to cart|add to bag|add to shopping bag|add to basket|buy now|add to trolley|purchase)$/i;
+  const genericPartialRegex = /add to cart|add to bag|add to shopping bag|add to basket|add to trolley/i;
   allButtons.forEach(btn => {
     if (!btn.hasAttribute('data-shadowcart-attached')) {
-      if (genericRegex.test((btn as HTMLElement).innerText || '')) {
-        btn.addEventListener('click', handleAddToCartClick);
-        btn.setAttribute('data-shadowcart-attached', 'true');
+      const text = ((btn as HTMLElement).innerText || '').trim();
+      if (text.length > 0 && text.length < 35 && (genericExactRegex.test(text) || genericPartialRegex.test(text))) {
+        if (!btn.querySelector('[data-shadowcart-attached]')) {
+          btn.addEventListener('click', handleAddToCartClick);
+          btn.setAttribute('data-shadowcart-attached', 'true');
+        }
       }
     }
   });
@@ -297,7 +371,13 @@ function attachListeners() {
 attachListeners();
 
 // Mutation observer for SPAs
-const observer = new MutationObserver(() => {
-  attachListeners();
+const observer = new MutationObserver((records) => {
+  records.forEach(record => {
+    record.addedNodes.forEach(node => {
+      if (node instanceof Element) {
+        attachListeners(node);
+      }
+    });
+  });
 });
 observer.observe(document.body, { childList: true, subtree: true });

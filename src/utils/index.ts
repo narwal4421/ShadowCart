@@ -1,7 +1,7 @@
 import type { ShadowCartItem } from '../types';
 
 export function timeAgo(timestamp: number): string {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
+  const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
   if (seconds < 60) return `${seconds}s ago`;
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
@@ -21,7 +21,7 @@ export function timeLeftStr(remindAt: number): string {
 }
 
 export function getFaviconUrl(siteName: string): string {
-  return `https://www.google.com/s2/favicons?domain=${siteName}&sz=64`;
+  return `https://icons.duckduckgo.com/ip3/${siteName}.ico`;
 }
 
 export function exportToCSV(items: ShadowCartItem[]): void {
@@ -42,5 +42,5 @@ export function exportToCSV(items: ShadowCartItem[]): void {
   a.href = url;
   a.download = `shadowcart-${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 }

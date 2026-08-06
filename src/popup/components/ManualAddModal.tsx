@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { MoodTag } from '../../types';
 import browser from 'webextension-polyfill';
 
@@ -6,6 +6,11 @@ interface ManualAddModalProps {
   onClose: () => void;
   onAdded: () => void;
 }
+
+type SaveItemResponse = {
+  saved: boolean;
+  reason?: string;
+};
 
 const MOOD_OPTIONS: Array<{ value: MoodTag; label: string; emoji: string }> = [
   { value: 'bored', label: 'Bored', emoji: '😴' },
@@ -21,15 +26,29 @@ export function ManualAddModal({ onClose, onAdded }: ManualAddModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    browser.tabs.query({ active: true, currentWindow: true }).then(tabs => {
+      const activeTab = tabs[0];
+      if (activeTab && activeTab.url && !activeTab.url.startsWith('chrome://') && !activeTab.url.startsWith('edge://')) {
+        setForm(f => ({
+          ...f,
+          productUrl: activeTab.url || '',
+          name: activeTab.title || ''
+        }));
+      }
+    }).catch(() => {});
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.productUrl.trim()) { setError('Product URL is required'); return; }
     if (!form.name.trim()) { setError('Product name is required'); return; }
     setLoading(true);
+    setError('');
     try {
       let siteName = '';
       try { siteName = new URL(form.productUrl).hostname.replace('www.', ''); } catch { siteName = 'unknown'; }
-      await browser.runtime.sendMessage({
+      const response = await browser.runtime.sendMessage({
         type: 'SAVE_ITEM',
         payload: {
           name: form.name.trim(),
@@ -39,10 +58,14 @@ export function ManualAddModal({ onClose, onAdded }: ManualAddModalProps) {
           siteName,
           mood: form.mood,
         },
-      });
+      }) as SaveItemResponse | undefined;
+      if (response?.saved === false) {
+        setError(response.reason === 'duplicate' ? 'This item is already in your pending cart.' : 'Item was not saved.');
+        return;
+      }
       onAdded();
       onClose();
-    } catch (err) {
+    } catch {
       setError('Failed to save item. Try again.');
     } finally {
       setLoading(false);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import browser from 'webextension-polyfill';
 import { getAllItems, updateItemStatus, initDB, snoozeItem } from '../db';
 import type { ShadowCartItem } from '../types';
@@ -18,19 +18,35 @@ export default function App() {
   const [historySearch, setHistorySearch] = useState('');
   const [items, setItems] = useState<ShadowCartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [undoQueue, setUndoQueue] = useState<UndoEntry[]>([]);
   const [showManualAdd, setShowManualAdd] = useState(false);
-  const [snoozeTarget, setSnoozeTarget] = useState<{ id: string; name: string } | null>(null);
+  const [snoozeTarget, setSnoozeTarget] = useState<{ id: string; name: string; reminderEmail?: string } | null>(null);
+  const loadCounterRef = useRef(0);
 
   const loadItems = useCallback(async (showLoading = true) => {
+    loadCounterRef.current += 1;
+    const loadId = loadCounterRef.current;
     if (showLoading) setLoading(true);
-    await initDB();
-    const data = await getAllItems();
-    data.sort((a, b) => b.addedAt - a.addedAt);
-    setItems(data);
-    setLoading(false);
-    // Refresh badge count in background
-    browser.runtime.sendMessage({ type: 'REFRESH_BADGE' }).catch(() => {});
+    try {
+      setLoadError('');
+      await initDB();
+      const data = await getAllItems();
+      data.sort((a, b) => b.addedAt - a.addedAt);
+      if (loadCounterRef.current === loadId) {
+        setItems(data);
+      }
+      // Refresh badge count in background
+      browser.runtime.sendMessage({ type: 'REFRESH_BADGE' }).catch(() => {});
+    } catch {
+      if (loadCounterRef.current === loadId) {
+        setLoadError('Could not load ShadowCart items. Storage may be unavailable or full.');
+      }
+    } finally {
+      if (loadCounterRef.current === loadId) {
+        setLoading(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -56,14 +72,13 @@ export default function App() {
     await loadItems(false);
   };
 
-  const handleDrop = (id: string, name: string) => {
+  const handleDrop = async (id: string, name: string) => {
     // Optimistically remove from UI
     setItems(prev => prev.filter(i => i.id !== id));
+    await updateItemStatus(id, 'dropped');
 
-    const timer = setTimeout(async () => {
-      await updateItemStatus(id, 'dropped');
+    const timer = setTimeout(() => {
       setUndoQueue(prev => prev.filter(q => q.id !== id));
-      await loadItems(false);
     }, 5000);
 
     setUndoQueue(prev => [...prev, { id, name, timer }]);
@@ -73,12 +88,13 @@ export default function App() {
     const entry = undoQueue.find(q => q.id === id);
     if (entry) clearTimeout(entry.timer);
     setUndoQueue(prev => prev.filter(q => q.id !== id));
+    await updateItemStatus(id, 'pending', { resetReminder: true });
     await loadItems(false);
   };
 
   const handleSnooze = (id: string) => {
     const item = items.find(i => i.id === id);
-    if (item) setSnoozeTarget({ id, name: item.name });
+    if (item) setSnoozeTarget({ id, name: item.name, reminderEmail: item.reminderEmail });
   };
 
   const confirmSnooze = async (remindAt: number, email?: string) => {
@@ -94,7 +110,7 @@ export default function App() {
     (historyFilter === 'all' || i.status === historyFilter) &&
     (historySearch === '' ||
       i.name.toLowerCase().includes(historySearch.toLowerCase()) ||
-      i.siteName.toLowerCase().includes(historySearch.toLowerCase()))
+      (i.siteName || '').toLowerCase().includes(historySearch.toLowerCase()))
   );
 
   const tabs: Tab[] = ['pending', 'history', 'dashboard'];
@@ -142,6 +158,12 @@ export default function App() {
           <div className="flex justify-center items-center h-full text-[#444] text-sm">Loading...</div>
         ) : (
           <>
+            {loadError && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-3 py-2 text-xs">
+                {loadError}
+              </div>
+            )}
+
             {/* PENDING TAB */}
             {activeTab === 'pending' && (
               <>
@@ -242,6 +264,7 @@ export default function App() {
       {snoozeTarget && (
         <SnoozeModal
           itemName={snoozeTarget.name}
+          initialEmail={snoozeTarget.reminderEmail}
           onConfirm={confirmSnooze}
           onClose={() => setSnoozeTarget(null)}
         />

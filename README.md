@@ -43,8 +43,26 @@ ShadowCart uses a cutting-edge, high-performance stack for a seamless user exper
 2. `npm install`
 3. `npm run build`
 
----
+Create a local `.env` file before building if you want email reminders:
 
+```bash
+VITE_REMINDER_SECRET=replace_with_the_same_secret_used_in_vercel
+```
+
+Set the same value in Vercel as `REMINDER_SECRET`.
+
+### Troubleshooting: build fails with "Cannot find native binding"
+
+This is a known npm optional-dependency issue. Fix with:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+If it persists, confirm your platform has a published `@rolldown/binding-*` package for your OS/architecture combination.
+
+---
 ## 🛡️ Our Philosophy
 We believe shopping should be intentional, not impulsive. We built ShadowCart to give you back your time (no more signups) and your money (no more impulse buys).
 

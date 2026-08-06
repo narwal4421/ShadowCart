@@ -3,6 +3,7 @@ import { getSettings } from '../../db';
 
 interface SnoozeModalProps {
   itemName: string;
+  initialEmail?: string;
   onConfirm: (remindAt: number, email?: string) => void;
   onClose: () => void;
 }
@@ -23,9 +24,9 @@ function toLocalDatetimeString(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function SnoozeModal({ itemName, onConfirm, onClose }: SnoozeModalProps) {
+export function SnoozeModal({ itemName, initialEmail, onConfirm, onClose }: SnoozeModalProps) {
   // Default custom picker to tomorrow at 10am
-  const now = useMemo(() => Date.now(), []);
+  const [now] = useState(() => Date.now());
   const tomorrow = useMemo(() => {
     const d = new Date(now);
     d.setDate(d.getDate() + 1);
@@ -40,20 +41,28 @@ export function SnoozeModal({ itemName, onConfirm, onClose }: SnoozeModalProps) 
   // min for datetime-local = now + 5 mins
   const minDatetime = useMemo(() => toLocalDatetimeString(new Date(now + 5 * 60 * 1000)), [now]);
 
-  const [emailEnabled, setEmailEnabled] = useState(false);
-  const [email, setEmail] = useState('');
+  const [emailEnabled, setEmailEnabled] = useState(Boolean(initialEmail));
+  const [email, setEmail] = useState(initialEmail || '');
+  const [emailError, setEmailError] = useState('');
 
   useEffect(() => {
-    getSettings().then(settings => {
-      if (settings.email) setEmail(settings.email);
-    });
-  }, []);
+    if (!initialEmail) {
+      getSettings().then(settings => {
+        if (settings.email) setEmail(settings.email);
+      });
+    }
+  }, [initialEmail]);
 
   const handleConfirm = () => {
     let chosenEmail: string | undefined = undefined;
     if (emailEnabled && email.trim()) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        setEmailError('Enter a valid email address.');
+        return;
+      }
       chosenEmail = email.trim();
     }
+    setEmailError('');
 
     if (mode === 'presets' && selected !== null) {
       onConfirm(Date.now() + selected, chosenEmail);
@@ -161,10 +170,14 @@ export function SnoozeModal({ itemName, onConfirm, onClose }: SnoozeModalProps) 
               type="email"
               placeholder="your@email.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => {
+                setEmail(e.target.value);
+                setEmailError('');
+              }}
               className="w-full bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#6c63ff] transition-colors"
             />
           )}
+          {emailError && <p className="text-xs text-red-400">{emailError}</p>}
         </div>
 
         {/* Confirm button */}

@@ -19,14 +19,13 @@ function DonutChart({ segments }: { segments: Array<{ value: number; color: stri
   if (total === 0) return <div className="w-20 h-20 rounded-full bg-[#2a2a2a]" />;
   const r = 30; const cx = 40; const cy = 40;
   const circ = 2 * Math.PI * r;
-  let offset = 0;
   return (
     <svg width="80" height="80" viewBox="0 0 80 80">
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#2a2a2a" strokeWidth="14" />
       {segments.map((seg, i) => {
+        const offset = segments.slice(0, i).reduce((sum, item) => sum + item.value, 0);
         const dash = (seg.value / total) * circ;
         const rot = (offset / total) * 360 - 90;
-        offset += seg.value;
         return (
           <circle key={i} cx={cx} cy={cy} r={r} fill="none"
             stroke={seg.color} strokeWidth="14"
@@ -164,7 +163,7 @@ export function Dashboard({ items }: DashboardProps) {
         <div className="flex gap-4 items-center">
           <DonutChart segments={stats.moodSegments} />
           <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-            {stats.moodSegments.sort((a, b) => b.value - a.value).slice(0, 4).map(seg => (
+            {[...stats.moodSegments].sort((a, b) => b.value - a.value).slice(0, 4).map(seg => (
               <div key={seg.mood} className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: seg.color }} />
                 <MoodTagBadge mood={seg.mood} />
@@ -214,7 +213,7 @@ export function Dashboard({ items }: DashboardProps) {
               onChange={e => setSettings(s => ({ ...s, emailEnabled: e.target.checked }))}
               className="accent-[#6c63ff] w-4 h-4"
             />
-            <span className="text-sm text-white">Enable SendPulse email reminders</span>
+            <span className="text-sm text-white">Enable email reminders</span>
           </label>
           
           {settings.emailEnabled && (

@@ -15,11 +15,15 @@ export async function initDB(): Promise<void> {
     dbPromise = openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          store.createIndex('status', 'status');
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            store.createIndex('status', 'status');
+          }
         }
         if (oldVersion < 2) {
-          db.createObjectStore(SETTINGS_STORE);
+          if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
+            db.createObjectStore(SETTINGS_STORE);
+          }
         }
       },
     });
@@ -54,11 +58,15 @@ export async function getItemsByStatus(status: ItemStatus): Promise<ShadowCartIt
 }
 
 // Update item status ("bought" or "dropped")
-export async function updateItemStatus(id: string, status: ItemStatus): Promise<void> {
+export async function updateItemStatus(id: string, status: ItemStatus, opts?: { resetReminder?: boolean }): Promise<void> {
   const db = await getDB();
   const item = await db.get(STORE_NAME, id);
   if (item) {
     item.status = status;
+    if (opts?.resetReminder) {
+      item.remindAt = Date.now() + 48 * 60 * 60 * 1000;
+      item.notified = false;
+    }
     await db.put(STORE_NAME, item);
   }
 }

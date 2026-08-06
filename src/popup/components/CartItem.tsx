@@ -3,6 +3,8 @@ import type { ShadowCartItem } from '../../types';
 import { MoodTag } from './MoodTag';
 import { timeAgo, timeLeftStr, getFaviconUrl } from '../../utils';
 
+const FALLBACK_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
 interface CartItemProps {
   item: ShadowCartItem;
   onBuy?: (id: string, url: string) => void;
@@ -17,10 +19,14 @@ export function CartItem({ item, onBuy, onDrop, onSnooze, isHistory = false }: C
 
   useEffect(() => {
     if (isHistory) return;
-    const update = () => setCountdown(timeLeftStr(item.remindAt));
+    let timeout: ReturnType<typeof setTimeout>;
+    const update = () => {
+      const diff = item.remindAt - Date.now();
+      setCountdown(timeLeftStr(item.remindAt));
+      timeout = setTimeout(update, diff > 0 && diff < 10 * 60 * 1000 ? 10000 : 60000);
+    };
     update();
-    const interval = setInterval(update, 60000);
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeout);
   }, [item.remindAt, isHistory]);
 
   return (
@@ -32,8 +38,11 @@ export function CartItem({ item, onBuy, onDrop, onSnooze, isHistory = false }: C
             alt={item.name}
             className="w-full h-full object-cover"
             onError={() => {
-              if (imgSrc !== getFaviconUrl(item.siteName)) {
-                setImgSrc(getFaviconUrl(item.siteName));
+              const faviconUrl = getFaviconUrl(item.siteName);
+              if (imgSrc !== faviconUrl) {
+                setImgSrc(faviconUrl);
+              } else if (imgSrc !== FALLBACK_IMAGE) {
+                setImgSrc(FALLBACK_IMAGE);
               }
             }}
           />
