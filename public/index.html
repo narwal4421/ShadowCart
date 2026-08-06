@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShadowCart — Cooling-Off Period Browser Extension for Impulse Buying</title>
+<meta name="description" content="ShadowCart is a free, local-first browser extension that intercepts 'Add to Cart' on any store and holds items in a private cooling-off queue — no signup, no server, just a 48-hour pause before you buy.">
+<meta name="keywords" content="shadowcart, impulse buying, cart cooling off period, browser extension, mindful shopping, chrome extension, buy later, save for later extension">
+<meta name="author" content="Pranjal Narwal">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#09090b">
+<link rel="canonical" href="https://shadow-cart.vercel.app/">
+<link rel="sitemap" type="application/xml" href="https://shadow-cart.vercel.app/sitemap.xml">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%BB%3C/text%3E%3C/svg%3E">
+
+<!-- Open Graph / Facebook / LinkedIn -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shadow-cart.vercel.app/">
+<meta property="og:title" content="ShadowCart — Don't just buy it. Shadow it.">
+<meta property="og:description" content="A local-first browser extension that intercepts 'Add to Cart' anywhere on the web and holds every item in a private cooling-off queue until you're sure you want it.">
+<meta property="og:site_name" content="ShadowCart">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://shadow-cart.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ShadowCart — don't just buy it, shadow it. A browser extension that pauses impulse buys with a 48-hour cooling-off queue.">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ShadowCart — Don't just buy it. Shadow it.">
+<meta name="twitter:description" content="Intercepts 'Add to Cart' on any store and holds it in a private 48-hour cooling-off queue. No signup, no server, local-first.">
+<meta name="twitter:image" content="https://shadow-cart.vercel.app/og-image.png">
+
+<!-- Structured data: describes ShadowCart as a free software application for rich results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ShadowCart",
+  "applicationCategory": "BrowserApplication",
+  "applicationSubCategory": "Productivity",
+  "operatingSystem": "Chrome, Chromium-based browsers",
+  "description": "A local-first browser extension that intercepts 'Add to Cart' clicks and holds items in a private cooling-off queue before checkout.",
+  "url": "https://shadow-cart.vercel.app/",
+  "screenshot": "https://shadow-cart.vercel.app/og-image.png",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "sameAs": [
+    "https://github.com/narwal4421/ShadowCart"
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Pranjal Narwal",
+    "url": "https://github.com/narwal4421"
+  }
+}
+</script>
+
+<!-- WebSite entity: reinforces brand as a distinct knowledge-graph entity, separate from the software listing -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "ShadowCart",
+  "url": "https://shadow-cart.vercel.app/",
+  "description": "A free, local-first browser extension that intercepts 'Add to Cart' on any store and holds items in a private cooling-off queue before checkout."
+}
+</script>
+
+<!-- FAQPage schema: powers FAQ rich snippets and gives AI answer engines (AEO/GEO) clean, quotable Q&A pairs -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is ShadowCart?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ShadowCart is a free, local-first browser extension that intercepts the \"Add to Cart\" action on any online store and holds the item in a private cooling-off queue — usually 48 hours — before you can check out."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does ShadowCart require an account or signup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. ShadowCart works without any account, email, or password. All data is stored locally in your browser using IndexedDB, and nothing is sent to a server unless you explicitly enable optional email reminders."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long is the ShadowCart cooling-off period?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The default cooling-off period is 48 hours. It can be shortened, extended, or snoozed per item from the ShadowCart dashboard."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which stores and browsers does ShadowCart work with?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ShadowCart works on any online store in Chrome and other Chromium-based browsers, since it intercepts the Add to Cart click at the browser level rather than integrating with a specific storefront."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is ShadowCart free and open source?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. ShadowCart is free to use and its source code is publicly available on GitHub, so it can be installed unpacked or built from source."
+      }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #09090b;
+    --panel: #131316;
+    --panel-2: #17171b;
+    --line: #232327;
+    --ghost: #f1f0f4;
+    --muted: #87868f;
+    --muted-2: #56565e;
+    --violet: #6c63ff;
+    --violet-soft: rgba(108,99,255,0.14);
+    --amber: #e8a33d;
+    --green: #49d68a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ghost);
+    font-family:'Source Serif 4', Georgia, serif;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+  a{color:inherit; text-decoration:none;}
+  .mono{font-family:'Courier Prime', monospace;}
+  .display{font-family:'Fraunces', Georgia, serif; font-variation-settings:'opsz' 40;}
+
+  /* grain / noise texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:999;
+    opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* custom cursor dot */
+  .cursor-dot{
+    position:fixed; top:0; left:0; width:8px; height:8px; border-radius:50%;
+    background:var(--violet); z-index:997; pointer-events:none;
+    transform:translate(-50%,-50%); opacity:0;
+    box-shadow:0 0 12px 2px rgba(108,99,255,0.7);
+    transition:opacity 0.3s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  }
+  .cursor-dot.is-active{opacity:1;}
+  .cursor-dot.is-pointer{width:22px; height:22px; background:transparent; border:1.5px solid var(--violet); box-shadow:none;}
+  @media (hover:none){ .cursor-dot{display:none;} }
+
+  /* page load curtain */
+  .curtain{
+    position:fixed; inset:0; z-index:1000; background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity 0.6s ease, visibility 0.6s ease;
+  }
+  .curtain span{
+    font-family:'Courier Prime', monospace; color:var(--violet); font-size:13px;
+    letter-spacing:0.1em; opacity:0.8;
+  }
+  .curtain.is-hidden{opacity:0; visibility:hidden;}
+  @keyframes curtainBlink{0%,100%{opacity:0.3;} 50%{opacity:1;}}
+  .curtain span::after{content:"_"; animation:curtainBlink 0.8s steps(1) infinite;}
+
+  /* animated gradient border on CTA panel */
+  .cta-panel{position:relative; z-index:999; isolation:isolate;}
+  .cta-panel::before{
+    content:""; position:absolute; inset:-1px; border-radius:20px; z-index:-1;
+    background:conic-gradient(from var(--ang,0deg), var(--violet), var(--amber), var(--green), var(--violet));
+    animation:rotateBorder 6s linear infinite;
+    opacity:0.5;
+  }
+  @keyframes rotateBorder{to{--ang:360deg;}}
+  @property --ang{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+
+  /* hero h1 letter stagger */
+  h1 .char{display:inline-block; opacity:0; transform:translateY(0.5em) rotate(4deg); animation:charIn 0.5s cubic-bezier(.25,.7,.3,1) forwards;}
+  @keyframes charIn{to{opacity:1; transform:translateY(0) rotate(0deg);}}
+
+  /* count-up meta numbers pulse-in */
+  .hero-meta b{display:inline-block;}
+  .hero-meta span{opacity:0; transform:translateY(6px); animation:riseIn 0.5s cubic-bezier(.25,.7,.3,1) forwards;}
+  .hero-meta span:nth-child(1){animation-delay:0.8s;}
+  .hero-meta span:nth-child(2){animation-delay:0.9s;}
+  .hero-meta span:nth-child(3){animation-delay:1.0s;}
+
+  /* SCROLL PROGRESS */
+  .scroll-progress{
+    position:fixed; top:0; left:0; height:2px; width:0%; z-index:200;
+    background:linear-gradient(90deg, var(--violet), var(--amber));
+    box-shadow:0 0 10px rgba(108,99,255,0.6);
+    transition:width 0.1s linear;
+  }
+
+  /* NAV */
+  nav{
+    position:sticky; top:0; z-index:100;
+    background:rgba(9,9,11,0.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    transition:box-shadow 0.3s ease, padding 0.3s ease;
+  }
+  nav.is-scrolled{box-shadow:0 8px 30px rgba(0,0,0,0.35);}
+  nav.is-scrolled .inner{padding-top:12px; padding-bottom:12px;}
+  .inner{transition:padding 0.3s ease;}
+
+  /* drifting background particles */
+  .particles{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+  .particle{
+    position:absolute; bottom:-20px; border-radius:50%;
+    background:var(--violet); opacity:0.18; filter:blur(0.5px);
+    animation:particleRise linear infinite;
+  }
+  @keyframes particleRise{
+    0%{transform:translateY(0) translateX(0); opacity:0;}
+    10%{opacity:0.22;}
+    90%{opacity:0.12;}
+    100%{transform:translateY(-110vh) translateX(var(--drift,20px)); opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){ .particles{display:none;} }
+
+  /* back to top */
+  .back-to-top{
+    position:fixed; bottom:26px; right:26px; z-index:150;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--line); color:var(--ghost);
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    opacity:0; transform:translateY(12px) scale(0.9); pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease, border-color 0.2s ease, background 0.2s ease;
+    cursor:pointer;
+  }
+  .back-to-top.is-visible{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+  .back-to-top:hover{border-color:var(--violet); background:var(--panel-2); transform:translateY(-3px) scale(1.05);}
+  .logo .ghost-mark{
+    display:inline-block;
+    animation:ghostFloat 3.2s ease-in-out infinite;
+  }
+  @keyframes ghostFloat{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-3px) rotate(-4deg);}
+  }
+  .nav-links a{position:relative;}
+  .nav-links a::after{
+    content:""; position:absolute; left:0; right:0; bottom:-4px; height:1px;
+    background:var(--violet); transform:scaleX(0); transform-origin:left;
+    transition:transform 0.25s ease;
+  }
+  .nav-links a:hover::after{transform:scaleX(1);}
+  nav .inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{display:flex; align-items:center; gap:10px; font-weight:600; font-size:17px; letter-spacing:-0.01em;}
+  .logo .ghost-mark{font-size:20px; filter:drop-shadow(0 0 8px var(--violet-soft));}
+  .nav-links{display:flex; gap:32px; font-size:14px; color:var(--muted);}
+  .nav-links a:hover{color:var(--ghost);}
+  .nav-cta{
+    background:var(--violet); color:#fff; padding:9px 18px; border-radius:8px;
+    font-size:13.5px; font-weight:500; transition:background 0.2s;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .nav-cta:hover{background:#5b52ee;}
+
+  /* HERO */
+  .hero{
+    padding:92px 0 60px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  @keyframes riseIn{from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);}}
+  .hero-grid > div:first-child > *{
+    opacity:0; animation:riseIn 0.6s cubic-bezier(.25,.7,.3,1) forwards;
+  }
+  .hero-grid > div:first-child > *:nth-child(1){animation-delay:0.05s;}
+  .hero-grid > div:first-child > *:nth-child(2){animation-delay:0.15s;}
+  .hero-grid > div:first-child > *:nth-child(3){animation-delay:0.28s;}
+  .hero-grid > div:first-child > *:nth-child(4){animation-delay:0.4s;}
+  .hero-grid > div:first-child > *:nth-child(5){animation-delay:0.5s;}
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Courier Prime', monospace; font-size:12px; letter-spacing:0.06em;
+    color:var(--violet); background:var(--violet-soft);
+    padding:6px 12px; border-radius:100px; margin-bottom:22px;
+    border:1px solid rgba(108,99,255,0.25);
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--violet); animation:pulse 2s infinite; position:relative;}
+  .eyebrow .dot::after{
+    content:""; position:absolute; inset:-3px; border-radius:50%; border:1px solid var(--violet);
+    animation:dotPing 2s ease-out infinite;
+  }
+  @keyframes dotPing{0%{transform:scale(0.6); opacity:0.8;} 100%{transform:scale(2.4); opacity:0;}}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+
+  h1{
+    font-family:'Fraunces', Georgia, serif;
+    font-size:58px; line-height:1.02; font-weight:600; letter-spacing:-0.01em;
+    margin-bottom:22px;
+  }
+  h1 .redact-word{
+    display:inline-block; background:#0b0b0d; color:transparent;
+    border-radius:2px; padding:0 8px; user-select:none; position:relative;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.03);
+    transition:background 0.3s ease;
+    cursor:default;
+  }
+  h1 .redact-word:hover{background:rgba(108,99,255,0.12);}
+  h1 .stamp-word{
+    font-family:'Special Elite', 'Courier Prime', monospace;
+    color:var(--violet);
+    text-transform:uppercase;
+    font-size:0.62em;
+    letter-spacing:0.03em;
+    display:inline-block;
+    border:3px solid var(--violet);
+    border-radius:3px;
+    padding:2px 12px 4px;
+    transform:rotate(-5deg);
+    vertical-align:middle;
+    position:relative;
+    opacity:0.9;
+    text-shadow:0 0 1px rgba(108,99,255,0.5);
+    animation:stampDown 0.45s cubic-bezier(.25,.9,.35,1.15) 0.35s both;
+  }
+  @keyframes stampDown{
+    0%{opacity:0; transform:rotate(-5deg) scale(2.4);}
+    70%{opacity:0.9;}
+    100%{opacity:0.9; transform:rotate(-5deg) scale(1);}
+  }
+
+  .hero-sub{
+    font-size:17px; line-height:1.6; color:var(--muted); max-width:480px; margin-bottom:32px;
+    position:relative; overflow:hidden;
+  }
+  .hero-sub::after{
+    content:""; position:absolute; inset:0; background:#0b0b0d;
+    transform-origin:left; animation:declassify 0.7s cubic-bezier(.7,0,.15,1) 0.85s forwards;
+  }
+  @keyframes declassify{to{transform:scaleX(0);}}
+  .hero-ctas{display:flex; gap:14px; margin-bottom:38px;}
+  .btn-primary{
+    background:var(--ghost); color:#0a0a0c; padding:14px 24px; border-radius:9px;
+    font-weight:600; font-size:14.5px; display:inline-flex; align-items:center; gap:8px;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-primary:hover{transform:translateY(-1px); box-shadow:0 8px 24px rgba(241,240,244,0.12);}
+  .btn-primary:active{transform:translateY(0) scale(0.97);}
+  .btn-primary span.arrow{display:inline-block; transition:transform 0.25s ease;}
+  .btn-primary:hover span.arrow{transform:translateX(4px);}
+  .btn-secondary{
+    border:1px solid var(--line); color:var(--ghost); padding:14px 22px; border-radius:9px;
+    font-weight:500; font-size:14.5px; display:inline-flex; align-items:center; gap:8px;
+    transition:border-color 0.15s ease, background 0.15s ease;
+    position:relative; overflow:hidden;
+  }
+  .btn-secondary::before{
+    content:""; position:absolute; left:-100%; top:0; bottom:0; width:100%;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    transition:left 0.5s ease;
+  }
+  .btn-secondary:hover::before{left:100%;}
+  .btn-secondary:hover{border-color:var(--muted-2); background:var(--panel);}
+
+  .hero-meta{display:flex; gap:26px; font-size:13px; color:var(--muted-2); font-family:'Courier Prime', monospace;}
+  .hero-meta span{display:flex; align-items:center; gap:7px;}
+  .hero-meta b{color:var(--ghost); font-weight:500;}
+
+  /* HERO DEMO: recreated widget */
+  .demo-stage{
+    position:relative; height:460px;
+    transform-style:preserve-3d; perspective:1200px;
+    animation:stageFloat 6s ease-in-out infinite;
+  }
+  @keyframes stageFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+  .fake-page{
+    transition:transform 0.3s ease;
+  }
+  .fake-page{
+    position:absolute; inset:0;
+    background:linear-gradient(160deg,#101012,#0c0c0e);
+    border:1px solid var(--line); border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 30px 70px rgba(0,0,0,0.5);
+  }
+  .fake-browser-bar{
+    height:38px; background:#151517; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:6px; padding:0 14px;
+  }
+  .fake-dot{width:9px; height:9px; border-radius:50%; background:#2c2c30;}
+  .fake-url{
+    margin-left:10px; font-size:11px; color:var(--muted-2); font-family:'Courier Prime', monospace;
+    background:#0d0d0f; padding:4px 10px; border-radius:5px; flex:1;
+    position:relative;
+  }
+  .fake-url .caret{display:inline-block; width:1px; background:var(--muted-2); animation:caretBlink 0.9s steps(1) infinite;}
+  @keyframes caretBlink{0%,49%{opacity:1;} 50%,100%{opacity:0;}}
+
+  /* sparkle burst */
+  .sparkle{
+    position:absolute; width:4px; height:4px; border-radius:50%;
+    background:var(--violet); pointer-events:none; opacity:0;
+    animation:sparkleBurst 0.7s ease-out forwards;
+  }
+  @keyframes sparkleBurst{
+    0%{opacity:1; transform:translate(0,0) scale(1);}
+    100%{opacity:0; transform:translate(var(--sx), var(--sy)) scale(0.3);}
+  }
+
+  /* marquee stack strip */
+  .stack-marquee{overflow:hidden; position:relative; -webkit-mask-image:linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image:linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);}
+  .stack-track{display:flex; gap:10px; width:max-content; animation:marquee 22s linear infinite;}
+  .stack-marquee:hover .stack-track{animation-play-state:paused;}
+  @keyframes marquee{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion: reduce){ .stack-track{animation:none;} }
+
+  /* logo glitch on hover */
+  .logo{cursor:default;}
+  .logo:hover .logo-text{animation:glitchText 0.4s steps(2,end) 2;}
+  @keyframes glitchText{
+    0%{transform:translate(0,0); text-shadow:none;}
+    20%{transform:translate(-1px,1px); text-shadow:1px 0 var(--violet), -1px 0 var(--amber);}
+    40%{transform:translate(1px,-1px); text-shadow:-1px 0 var(--violet), 1px 0 var(--amber);}
+    60%{transform:translate(-1px,0); text-shadow:1px 0 var(--amber), -1px 0 var(--violet);}
+    100%{transform:translate(0,0); text-shadow:none;}
+  }
+  .fake-product{
+    padding:26px; display:flex; gap:20px; opacity:0.55; filter:blur(0.3px);
+  }
+  .fake-thumb{
+    width:120px; height:120px; border-radius:10px; flex-shrink:0;
+    background:linear-gradient(135deg,#232226,#18171a);
+    border:1px solid var(--line);
+  }
+  .fake-lines div{height:10px; border-radius:4px; background:#222226; margin-bottom:10px;}
+  .fake-btn{
+    margin-top:16px; display:inline-block; background:#2b2b30; color:#8a8a92;
+    padding:10px 22px; border-radius:7px; font-size:13px; width:fit-content;
+  }
+
+  /* the injected widget, recreated pixel-for-pixel from the extension source */
+  .widget{
+    position:absolute; bottom:22px; right:22px; width:280px;
+    background:#1a1a1a; border:1px solid #2e2e2e; border-radius:16px;
+    padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.55);
+    animation:widgetLoop 6s cubic-bezier(.25,.7,.3,1) infinite;
+  }
+  @keyframes widgetLoop{
+    0%,24%{opacity:0; transform:translateY(20px) scale(0.98);}
+    32%,80%{opacity:1; transform:translateY(0) scale(1);}
+    92%,100%{opacity:0; transform:translateY(10px) scale(0.99);}
+  }
+
+  /* cursor + click interception sim, looped to match widget/badge cycle */
+  .cursor-sim{
+    position:absolute; left:16%; top:30%; font-size:20px; z-index:6;
+    pointer-events:none; opacity:0;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+    animation:cursorLoop 6s cubic-bezier(.4,.1,.3,1) infinite;
+  }
+  @keyframes cursorLoop{
+    0%{left:8%; top:22%; opacity:0;}
+    5%{opacity:1;}
+    17%{left:56%; top:56%; opacity:1;}
+    20%{left:56%; top:56%; opacity:1; transform:scale(0.8) rotate(-8deg);}
+    24%{transform:scale(1) rotate(0deg);}
+    75%{left:56%; top:56%; opacity:1;}
+    88%{opacity:0; left:30%; top:35%;}
+    100%{opacity:0; left:8%; top:22%;}
+  }
+  .click-ripple{
+    position:absolute; left:56%; top:56%; width:16px; height:16px;
+    margin:-8px 0 0 -8px; border:2px solid var(--violet); border-radius:50%;
+    z-index:5; pointer-events:none; opacity:0;
+    animation:rippleLoop 6s cubic-bezier(.25,.7,.3,1) infinite;
+  }
+  @keyframes rippleLoop{
+    0%,19%{opacity:0; transform:scale(0.4);}
+    21%{opacity:0.9; transform:scale(0.5);}
+    32%{opacity:0; transform:scale(3);}
+    100%{opacity:0;}
+  }
+  .fake-btn{animation:btnFlash 6s ease-in-out infinite;}
+  @keyframes btnFlash{
+    0%,19%{filter:brightness(1); transform:scale(1);}
+    22%{filter:brightness(1.7); transform:scale(0.93);}
+    27%,100%{filter:brightness(1); transform:scale(1);}
+  }
+  .widget-preview{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px; padding-bottom:14px;
+    border-bottom:1px solid #2e2e2e;
+  }
+  .widget-thumb{width:34px; height:34px; border-radius:7px; background:linear-gradient(135deg,var(--violet),#3d34b8); flex-shrink:0; animation:thumbBreathe 3.4s ease-in-out infinite;}
+  @keyframes thumbBreathe{0%,100%{box-shadow:0 0 0 0 rgba(108,99,255,0.35);} 50%{box-shadow:0 0 0 6px rgba(108,99,255,0);}}
+  .widget-name{font-size:12px; color:#ddd; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .widget-title{font-size:14px; font-weight:600; margin-bottom:3px;}
+  .widget-subtitle{font-size:11px; color:#888; margin-bottom:14px;}
+  .widget-grid{display:grid; grid-template-columns:1fr 1fr; gap:7px;}
+  .widget-grid button{
+    background:#2a2a2a; border:1px solid #3a3a3a; border-radius:9px; padding:9px 6px;
+    font-size:11px; color:#fff; font-family:'Source Serif 4', Georgia, serif; cursor:default;
+  }
+  .widget-grid button:nth-child(3){
+    background:var(--violet); border-color:var(--violet);
+    animation:selectPulse 3s ease-in-out infinite;
+  }
+  @keyframes selectPulse{0%,80%,100%{filter:brightness(1);} 88%{filter:brightness(1.25);}}
+  .widget-progress{height:3px; background:#2e2e2e; border-radius:0 0 16px 16px; margin-top:14px; margin:14px -18px -18px; overflow:hidden;}
+  .widget-progress-bar{height:100%; background:var(--violet); animation:progressLoop 6s linear infinite;}
+  @keyframes progressLoop{0%,32%{width:100%;} 80%{width:0%;} 100%{width:0%;}}
+
+  .badge-float{
+    position:absolute; top:34px; right:-14px;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; font-size:11px; font-family:'Courier Prime',monospace; color:var(--muted);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    animation:badgeLoop 6s ease-in-out infinite;
+  }
+  @keyframes badgeLoop{
+    0%,22%{opacity:0; transform:translateY(10px);}
+    30%{opacity:1; transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+    70%{transform:translateY(0);}
+    82%{opacity:1;}
+    92%,100%{opacity:0; transform:translateY(-4px);}
+  }
+
+  /* shimmer skeleton sweep on the fake product preview */
+  .fake-thumb, .fake-lines div{position:relative; overflow:hidden;}
+  .fake-thumb::after, .fake-lines div::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
+    transform:translateX(-100%);
+    animation:shimmerSweep 2.6s ease-in-out infinite;
+  }
+  .fake-lines div:nth-child(2)::after{animation-delay:0.15s;}
+  .fake-lines div:nth-child(3)::after{animation-delay:0.3s;}
+  @keyframes shimmerSweep{
+    0%{transform:translateX(-100%);}
+    50%,100%{transform:translateX(100%);}
+  }
+
+  /* nav CTA breathing glow */
+  .nav-cta{position:relative;}
+  .nav-cta::after{
+    content:""; position:absolute; inset:-2px; border-radius:10px; z-index:-1;
+    background:var(--violet); opacity:0; filter:blur(8px);
+    animation:navGlow 3.4s ease-in-out infinite;
+  }
+  @keyframes navGlow{0%,100%{opacity:0;} 50%{opacity:0.45;}}
+
+  /* dossier card 3D tilt (JS-driven via --rx/--ry) */
+  .dossier-card{transform:perspective(700px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg)) translateY(0);}
+  .dossier-card:hover{transform:perspective(700px) rotateX(var(--ry,0deg)) rotateY(var(--rx,0deg)) translateY(-3px);}
+
+  /* badge-float text shimmer */
+  .badge-float{background-image:linear-gradient(100deg, var(--panel) 40%, rgba(108,99,255,0.25) 50%, var(--panel) 60%); background-size:250% 100%; animation:badgeLoop 6s ease-in-out infinite, badgeShimmer 3s linear infinite;}
+  @keyframes badgeShimmer{0%{background-position:200% 0;} 100%{background-position:-200% 0;}}
+  .log-section{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--panel); padding:36px 0;
+  }
+  .log-head{
+    font-family:'Courier Prime', monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--muted-2); margin-bottom:18px;
+  }
+  .log-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+  }
+  .log-entry{
+    font-family:'Courier Prime', monospace; font-size:12.5px; color:var(--muted-2);
+    display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+    padding:12px 14px; border:1px solid var(--line); border-radius:8px;
+    background:var(--panel-2);
+    opacity:0; transform:translateY(10px) rotate(-0.6deg);
+    transition:opacity 0.5s ease, transform 0.5s ease;
+  }
+  .log-entry.is-visible{opacity:1; transform:translateY(0) rotate(0deg);}
+  .log-entry{cursor:default;}
+  .log-entry:hover{transform:translateY(-3px) rotate(0deg); border-color:var(--muted-2); background:var(--panel);}
+  .log-entry b{color:var(--muted); font-weight:400;}
+  .log-entry .status-cool{color:var(--amber); white-space:nowrap;}
+  .log-entry .status-drop{color:var(--muted-2); text-decoration:line-through; white-space:nowrap;}
+  .log-entry .status-buy{color:var(--green); white-space:nowrap;}
+  @media (max-width:900px){ .log-grid{grid-template-columns:1fr;} }
+
+  /* SCROLL REVEAL */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity 0.7s cubic-bezier(.25,.7,.3,1), transform 0.7s cubic-bezier(.25,.7,.3,1);}
+  .reveal.is-in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > *{opacity:0; transform:translateY(22px); transition:opacity 0.6s cubic-bezier(.25,.7,.3,1), transform 0.6s cubic-bezier(.25,.7,.3,1);}
+  .reveal-stagger.is-in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.is-in > *:nth-child(1){transition-delay:0.03s;}
+  .reveal-stagger.is-in > *:nth-child(2){transition-delay:0.11s;}
+  .reveal-stagger.is-in > *:nth-child(3){transition-delay:0.19s;}
+  .reveal-stagger.is-in > *:nth-child(4){transition-delay:0.27s;}
+  .reveal-stagger.is-in > *:nth-child(5){transition-delay:0.35s;}
+  .reveal-stagger.is-in > *:nth-child(6){transition-delay:0.43s;}
+
+  /* SECTIONS */
+  section{padding:100px 0;}
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-eyebrow{
+    font-family:'Courier Prime', monospace; font-size:12px; color:var(--muted-2);
+    letter-spacing:0.08em; text-transform:uppercase; margin-bottom:14px; display:inline-block;
+    position:relative; padding-bottom:6px;
+  }
+  .section-eyebrow::after{
+    content:""; position:absolute; left:0; bottom:0; height:1px; width:100%;
+    background:var(--violet); transform:scaleX(0); transform-origin:left;
+    transition:transform 0.8s cubic-bezier(.25,.7,.3,1) 0.15s;
+  }
+  .reveal.is-in .section-eyebrow::after{transform:scaleX(1);}
+  h2{
+    font-family:'Fraunces', Georgia, serif; font-size:36px; font-weight:600;
+    letter-spacing:-0.01em; line-height:1.15; margin-bottom:14px;
+  }
+  .section-sub{color:var(--muted); font-size:16px; line-height:1.6; max-width:560px;}
+
+  /* FEATURES — dossier cards */
+  .dossier-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    margin-top:16px;
+  }
+  .dossier-card{
+    background:var(--panel); padding:30px 28px; position:relative;
+    transition:background 0.25s, transform 0.25s ease;
+    transform-style:preserve-3d; will-change:transform;
+  }
+  .dossier-card::after{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:0;
+    background:radial-gradient(180px circle at var(--mx,50%) var(--my,50%), rgba(108,99,255,0.14), transparent 70%);
+    transition:opacity 0.3s;
+  }
+  .dossier-card:hover{background:var(--panel-2); transform:translateY(-3px);}
+  .dossier-card:hover::after{opacity:1;}
+  .dossier-tag{
+    position:absolute; top:0; left:28px; transform:translateY(-50%) rotate(-3deg);
+    background:var(--bg); border:2px solid var(--violet); border-radius:3px;
+    padding:2px 9px 3px; font-family:'Special Elite', 'Courier Prime', monospace;
+    font-size:10.5px; letter-spacing:0.03em; color:var(--violet); opacity:0.88;
+  }
+  .dossier-card:nth-child(2) .dossier-tag{transform:translateY(-50%) rotate(2deg);}
+  .dossier-card:nth-child(3) .dossier-tag{transform:translateY(-50%) rotate(-1.5deg);}
+  .dossier-card:nth-child(4) .dossier-tag{transform:translateY(-50%) rotate(2.5deg);}
+  .dossier-card:nth-child(5) .dossier-tag{transform:translateY(-50%) rotate(-2deg);}
+  .dossier-card:nth-child(6) .dossier-tag{transform:translateY(-50%) rotate(1.5deg);}
+  .dossier-tag{transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);}
+  .dossier-card:hover .dossier-tag{transform:translateY(-60%) rotate(0deg) scale(1.08) !important;}
+  .dossier-icon{font-size:22px; margin-bottom:16px; display:block; transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);}
+  .dossier-card:hover .dossier-icon{transform:scale(1.2) rotate(-8deg);}
+  .dossier-card h3{
+    font-family:'Fraunces', Georgia, serif; font-size:17px; font-weight:600; margin-bottom:10px;
+  }
+  .dossier-card p{font-size:14px; line-height:1.65; color:var(--muted);}
+  .redacted{
+    display:inline-block; background:#2a2a2e; color:transparent; border-radius:2px;
+    user-select:none;
+  }
+
+  /* HOW IT WORKS — protocol steps (genuinely sequential) */
+  .protocol{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative;
+  }
+  .protocol::before{
+    content:""; position:absolute; top:19px; left:6%; right:6%; height:1px;
+    background:repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 16px);
+    z-index:0;
+    transform:scaleX(0); transform-origin:left;
+    transition:transform 1.1s cubic-bezier(.25,.7,.3,1) 0.2s;
+  }
+  .protocol.is-in::before{transform:scaleX(1); animation:dashFlow 1.4s linear 1.3s infinite;}
+  @keyframes dashFlow{to{background-position:32px 0;}}
+  .protocol-step{position:relative; z-index:1; padding-right:20px;}
+  .protocol-num{
+    width:38px; height:38px; border-radius:50%; background:var(--bg); border:1px solid var(--violet);
+    color:var(--violet); font-family:'Courier Prime',monospace; font-size:13px; font-weight:500;
+    display:flex; align-items:center; justify-content:center; margin-bottom:18px;
+    transition:transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s ease;
+  }
+  .protocol-step:hover .protocol-num{transform:scale(1.15); box-shadow:0 0 0 6px var(--violet-soft);}
+  .protocol-step h4{font-family:'Fraunces',Georgia,serif; font-size:15.5px; font-weight:600; margin-bottom:8px;}
+  .protocol-step p{font-size:13.5px; color:var(--muted); line-height:1.6;}
+
+  /* STACK strip */
+  .stack-strip{
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  .stack-chip{
+    border:1px solid var(--line); border-radius:100px; padding:9px 16px;
+    font-size:13px; color:var(--muted); font-family:'Courier Prime',monospace;
+    display:flex; align-items:center; gap:8px;
+    transition:transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .stack-chip:hover{transform:translateY(-3px); border-color:var(--violet); color:var(--ghost);}
+  .stack-chip .sq{width:6px; height:6px; background:var(--violet); border-radius:1px; transition:transform 0.25s ease;}
+  .stack-chip:hover .sq{transform:scale(1.6) rotate(45deg);}
+
+  /* CTA */
+  .cta-panel{
+    background:radial-gradient(circle at 30% 20%, rgba(108,99,255,0.14), transparent 60%), var(--panel);
+    border:1px solid var(--line); border-radius:20px; padding:64px 56px;
+    display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center;
+    position:relative; overflow:hidden;
+  }
+  .cta-panel h2{font-size:32px;}
+  .case-closed-stamp{
+    position:absolute; top:28px; right:40px;
+    font-family:'Special Elite', 'Courier Prime', monospace;
+    font-size:15px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--violet); opacity:0.75;
+    border:3px double var(--violet); border-radius:4px;
+    padding:6px 16px; transform:rotate(-9deg) scale(2);
+    pointer-events:none; opacity:0;
+    transition:transform 0.5s cubic-bezier(.25,.9,.35,1.15), opacity 0.5s ease;
+  }
+  .cta-panel.is-in .case-closed-stamp{opacity:0.75; transform:rotate(-9deg) scale(1);}
+  @media (max-width:900px){ .case-closed-stamp{display:none;} }
+  .cta-code{
+    background:#0d0d0f; border:1px solid var(--line); border-radius:12px; padding:22px;
+    font-family:'Courier Prime',monospace; font-size:13px; line-height:2;
+  }
+  .cta-code .c1{color:var(--muted-2);}
+  .cta-code .c2{color:var(--green);}
+  .cta-code .c3{color:var(--ghost);}
+
+  footer{
+    border-top:1px solid var(--line); padding:40px 0; margin-top:20px;
+  }
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  .footer-tag{font-family:'Fraunces',Georgia,serif; font-size:14px; color:var(--muted);}
+  .footer-tag .footer-ghost{display:inline-block; animation:ghostFloat 3.2s ease-in-out infinite;}
+  .footer-links{display:flex; gap:24px; font-size:13px; color:var(--muted-2);}
+  .footer-links a{display:inline-block; transition:color 0.2s ease, transform 0.2s ease;}
+  .footer-links a:hover{color:var(--ghost); transform:translateY(-2px);}
+
+  /* ===================== RESPONSIVE ===================== */
+
+  /* TABLET & below (~900px) */
+  @media (max-width:900px){
+    .wrap{padding:0 24px;}
+    nav .inner{padding:16px 24px;}
+    .hero{padding:64px 0 44px;}
+    .hero-grid{grid-template-columns:1fr; gap:40px;}
+    .demo-stage{height:380px; margin-top:10px;}
+    h1{font-size:42px;}
+    section{padding:76px 0;}
+    h2{font-size:30px;}
+    .dossier-grid{grid-template-columns:1fr 1fr;}
+    .protocol{grid-template-columns:1fr 1fr; row-gap:36px;}
+    .protocol::before{display:none;}
+    .cta-panel{grid-template-columns:1fr; padding:40px 32px; gap:32px;}
+    .nav-links{display:none;}
+  }
+
+  /* PHONE (~640px) */
+  @media (max-width:640px){
+    .wrap{padding:0 18px;}
+    nav .inner{padding:14px 18px;}
+    .logo{font-size:15px;}
+    .nav-cta{padding:8px 12px; font-size:12.5px;}
+    .nav-cta svg{display:none;}
+    .hero{padding:44px 0 36px;}
+    .eyebrow{font-size:10.5px; padding:5px 10px; margin-bottom:16px;}
+    h1{font-size:32px;}
+    h1 .stamp-word{font-size:0.58em;}
+    .hero-sub{font-size:15px; max-width:100%;}
+    .hero-ctas{flex-direction:column; gap:10px; margin-bottom:26px;}
+    .hero-ctas a{justify-content:center; width:100%;}
+    .hero-meta{flex-direction:column; align-items:flex-start; gap:10px;}
+    .demo-stage{height:auto; min-height:340px; margin-top:16px;}
+    .widget{width:min(280px, calc(100% - 24px)); right:12px; bottom:12px;}
+    .badge-float{right:0; top:22px; font-size:10px; padding:6px 10px;}
+    .fake-product{padding:18px; gap:14px;}
+    .fake-thumb{width:80px; height:80px;}
+    section{padding:56px 0;}
+    .section-head{margin-bottom:36px;}
+    h2{font-size:25px;}
+    .section-sub{font-size:14.5px;}
+    .dossier-grid{grid-template-columns:1fr;}
+    .dossier-card{padding:26px 22px;}
+    .protocol{grid-template-columns:1fr; row-gap:30px;}
+    .protocol-step{padding-right:0;}
+    .stack-marquee{-webkit-mask-image:linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); mask-image:linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);}
+    .cta-panel{padding:32px 20px; border-radius:16px;}
+    .cta-panel h2{font-size:24px;}
+    .cta-code{padding:16px; font-size:11.5px; overflow-x:auto;}
+    footer{padding:28px 0;}
+    .footer-inner{flex-direction:column; align-items:flex-start; gap:14px;}
+    .footer-links{gap:18px;}
+    .back-to-top{width:38px; height:38px; bottom:18px; right:18px; font-size:14px;}
+    .log-head{font-size:10px;}
+    .log-entry{font-size:11.5px; padding:10px 12px;}
+  }
+
+  /* SMALL PHONE (~380px) */
+  @media (max-width:380px){
+    h1{font-size:27px;}
+    .hero-meta{font-size:12px;}
+    .widget{padding:16px;}
+    .widget-progress{margin:14px -16px -16px;}
+    .widget-grid{gap:6px;}
+    .widget-grid button{font-size:10px; padding:8px 5px;}
+    .fake-thumb{width:64px; height:64px;}
+  }
+</style>
+</head>
+<body>
+<div class="curtain" id="curtain"><span>LOADING CASE FILE</span></div>
+<div class="scroll-progress" id="scrollProgress"></div>
+<div class="particles" id="particles"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<header>
+<nav>
+  <div class="inner">
+    <div class="logo"><span class="ghost-mark" aria-hidden="true">👻</span> <span class="logo-text">ShadowCart</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#protocol">How it works</a>
+      <a href="#stack">Stack</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="nav-cta" href="https://github.com/narwal4421/ShadowCart" target="_blank" rel="noopener"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>View on GitHub</a>
+  </div>
+</nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> CASE FILE 001 · OPEN INVESTIGATION</div>
+      <h1>Don't <span class="redact-word" aria-label="buy">buy</span> it.<br>Just <span class="stamp-word">shadow</span> it.</h1>
+      <p class="hero-sub">ShadowCart intercepts "Add to Cart" on any store — no account required — and holds every item in a private, local cooling-off queue until you're sure you actually want it.</p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href="https://github.com/narwal4421/ShadowCart" target="_blank" rel="noopener">Install the extension →</a>
+        <a class="btn-secondary" href="#protocol">See how it works</a>
+      </div>
+      <div class="hero-meta">
+        <span>🔒 <b>Local-first</b> IndexedDB</span>
+        <span>🕒 <b>48h</b> default cooldown</span>
+        <span>🌐 <b>Any</b> store, zero signup</span>
+      </div>
+    </div>
+
+    <div class="demo-stage">
+      <div class="fake-page">
+        <div class="fake-browser-bar">
+          <div class="fake-dot"></div><div class="fake-dot"></div><div class="fake-dot"></div>
+          <div class="fake-url" id="fakeUrl"><span id="fakeUrlText"></span><span class="caret">|</span></div>
+        </div>
+        <div class="fake-product">
+          <div class="fake-thumb"></div>
+          <div class="fake-lines" style="flex:1;">
+            <div style="width:70%;"></div>
+            <div style="width:45%;"></div>
+            <div style="width:55%; height:14px; background:#2c2c30;"></div>
+            <div class="fake-btn">Add to Cart</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="click-ripple"></div>
+      <div class="cursor-sim">🖱️</div>
+      <div class="badge-float">✅ SAVED · NO SIGNUP</div>
+
+      <div class="widget">
+        <div class="widget-preview">
+          <div class="widget-thumb"></div>
+          <div class="widget-name">Field Recorder — Matte Black</div>
+        </div>
+        <div class="widget-title">Added to ShadowCart 👻</div>
+        <div class="widget-subtitle">Quick — why do you want this?</div>
+        <div class="widget-grid">
+          <button>😴 Bored</button>
+          <button>😔 Stressed</button>
+          <button>✅ Actually need it</button>
+          <button>🎁 Treating myself</button>
+        </div>
+        <div class="widget-progress"><div class="widget-progress-bar"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="log-section">
+  <div class="wrap">
+    <div class="log-head">Case log — most recent entries</div>
+    <div class="log-grid">
+      <div class="log-entry"><span><b>#4471</b> ceramic pour-over kit</span> <span class="status-cool">COOLING · 46h</span></div>
+      <div class="log-entry"><span><b>#4470</b> wool overshirt, size M</span> <span class="status-drop">DROPPED — bored</span></div>
+      <div class="log-entry"><span><b>#4469</b> keyboard switches</span> <span class="status-buy">BOUGHT — needed it</span></div>
+      <div class="log-entry"><span><b>#4468</b> walnut desk lamp</span> <span class="status-cool">COOLING · 12h</span></div>
+      <div class="log-entry"><span><b>#4467</b> running shoes, size 10</span> <span class="status-drop">DROPPED — saw it somewhere</span></div>
+      <div class="log-entry"><span><b>#4466</b> espresso tamper, 58mm</span> <span class="status-buy">BOUGHT — treat</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Evidence / 04 exhibits</span>
+      <h2>Every impulse, on the record.</h2>
+      <p class="section-sub">ShadowCart doesn't block you from buying anything. It just makes sure the version of you that clicked "Add to Cart" and the version of you checking out are the same person.</p>
+    </div>
+    <div class="dossier-grid reveal-stagger">
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT A</span>
+        <span class="dossier-icon" aria-hidden="true">🚫</span>
+        <h3>The no-signup rule</h3>
+        <p>Save from Amazon, Shopify, Gucci — anywhere — without ever handing over an email or <span class="redacted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> password.</p>
+      </div>
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT B</span>
+        <span class="dossier-icon" aria-hidden="true">🗂️</span>
+        <h3>Unified dashboard</h3>
+        <p>Every product you're considering, across every store, in one dark, calm, single interface — not fifteen abandoned carts.</p>
+      </div>
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT C</span>
+        <span class="dossier-icon" aria-hidden="true">⏳</span>
+        <h3>The cooling period</h3>
+        <p>Each item enters a countdown before you can act on it. Default 48 hours. Yours to shorten, extend, or snooze.</p>
+      </div>
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT D</span>
+        <span class="dossier-icon" aria-hidden="true">📩</span>
+        <h3>The follow-up</h3>
+        <p>When the timer runs out, get a quiet notification — and an optional email — asking one question: still want it?</p>
+      </div>
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT E</span>
+        <span class="dossier-icon" aria-hidden="true">🎭</span>
+        <h3>Mood tagging</h3>
+        <p>Bored. Stressed. Treating yourself. Tag the click in five seconds and start seeing the pattern behind your spending.</p>
+      </div>
+      <div class="dossier-card">
+        <span class="dossier-tag">EXHIBIT F</span>
+        <span class="dossier-icon" aria-hidden="true">🔐</span>
+        <h3>Privacy first</h3>
+        <p>Everything lives in IndexedDB, on your machine. Nothing syncs to a server unless you explicitly turn on email reminders.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="protocol">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Protocol</span>
+      <h2>Four stages, start to finish.</h2>
+      <p class="section-sub">The sequence is fixed — each stage only exists because the one before it happened.</p>
+    </div>
+    <div class="protocol reveal-stagger">
+      <div class="protocol-step">
+        <div class="protocol-num">01</div>
+        <h4>Click "Add to Cart"</h4>
+        <p>Anywhere on the web. ShadowCart intercepts it before the store's own cart ever sees it.</p>
+      </div>
+      <div class="protocol-step">
+        <div class="protocol-num">02</div>
+        <h4>Tag the impulse</h4>
+        <p>One tap: bored, stressed, need it, treating yourself. Skip if you're in a hurry.</p>
+      </div>
+      <div class="protocol-step">
+        <div class="protocol-num">03</div>
+        <h4>Cool down</h4>
+        <p>The item sits in your dashboard on a timer. No pressure, no expiring "deal," just time.</p>
+      </div>
+      <div class="protocol-step">
+        <div class="protocol-num">04</div>
+        <h4>Decide, once</h4>
+        <p>Timer's up — you get pinged. Buy it or drop it. Either way, it was your call, not a dark pattern's.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Under the hood</span>
+      <h2>Built to disappear.</h2>
+      <p class="section-sub">A stealth-mode content script, a local-first database, and a background worker that never phones home unless you ask it to.</p>
+    </div>
+    <div class="stack-marquee reveal">
+      <div class="stack-track">
+        <div class="stack-chip"><span class="sq"></span>React 19 + TypeScript</div>
+        <div class="stack-chip"><span class="sq"></span>Vite + CRXJS</div>
+        <div class="stack-chip"><span class="sq"></span>Tailwind CSS</div>
+        <div class="stack-chip"><span class="sq"></span>IndexedDB (idb)</div>
+        <div class="stack-chip"><span class="sq"></span>Manifest V3</div>
+        <div class="stack-chip"><span class="sq"></span>Vercel Functions</div>
+        <div class="stack-chip"><span class="sq"></span>Transactional Email API</div>
+        <div class="stack-chip"><span class="sq"></span>React 19 + TypeScript</div>
+        <div class="stack-chip"><span class="sq"></span>Vite + CRXJS</div>
+        <div class="stack-chip"><span class="sq"></span>Tailwind CSS</div>
+        <div class="stack-chip"><span class="sq"></span>IndexedDB (idb)</div>
+        <div class="stack-chip"><span class="sq"></span>Manifest V3</div>
+        <div class="stack-chip"><span class="sq"></span>Vercel Functions</div>
+        <div class="stack-chip"><span class="sq"></span>Transactional Email API</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-panel reveal">
+      <div class="case-closed-stamp">Case closed</div>
+      <div>
+        <span class="section-eyebrow">Final ruling</span>
+        <h2>Two minutes to install.<br>A lifetime of paused impulses.</h2>
+        <p class="section-sub" style="margin-top:14px;">Load it unpacked today, or clone it and build from source. No store review, no waiting.</p>
+        <div class="hero-ctas" style="margin-top:28px;">
+          <a class="btn-primary" href="https://github.com/narwal4421/ShadowCart" target="_blank" rel="noopener">Get ShadowCart →</a>
+        </div>
+      </div>
+      <div class="cta-code">
+        <div><span class="c1">$</span> <span class="c3">git clone</span> <span class="c2">github.com/narwal4421/ShadowCart</span></div>
+        <div><span class="c1">$</span> <span class="c3">npm install</span></div>
+        <div><span class="c1">$</span> <span class="c3">npm run build</span></div>
+        <div class="c1">→ load /dist at chrome://extensions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Who it's for</span>
+      <h2>Built for impulse buyers who want to stay in control.</h2>
+      <p class="section-sub">If late-night scrolling turns into late-night checkouts, ShadowCart adds a pause between the impulse and the purchase — a lightweight, private alternative to cart-abandonment tricks and "just this once" spending. It's not a budgeting app or a blocker; it's a 48-hour buffer that lets you shop the way you already do, minus the regret.</p>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">Deposition — Q&amp;A</span>
+      <h2>Common questions, answered plainly.</h2>
+      <p class="section-sub">Straight answers, no legalese.</p>
+    </div>
+    <div class="reveal-stagger" style="display:grid; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;">
+      <div style="background:var(--panel); padding:24px 28px;">
+        <h3 style="font-family:'Fraunces',Georgia,serif; font-size:17px; margin-bottom:8px;">What is ShadowCart?</h3>
+        <p style="font-size:14px; line-height:1.65; color:var(--muted);">ShadowCart is a free, local-first browser extension that intercepts "Add to Cart" on any online store and holds the item in a private cooling-off queue — usually 48 hours — before you can check out.</p>
+      </div>
+      <div style="background:var(--panel); padding:24px 28px;">
+        <h3 style="font-family:'Fraunces',Georgia,serif; font-size:17px; margin-bottom:8px;">Does it require an account?</h3>
+        <p style="font-size:14px; line-height:1.65; color:var(--muted);">No signup, email, or password. Everything is stored locally in your browser via IndexedDB, and nothing reaches a server unless you turn on optional email reminders.</p>
+      </div>
+      <div style="background:var(--panel); padding:24px 28px;">
+        <h3 style="font-family:'Fraunces',Georgia,serif; font-size:17px; margin-bottom:8px;">How long is the cooling-off period?</h3>
+        <p style="font-size:14px; line-height:1.65; color:var(--muted);">48 hours by default — shorten, extend, or snooze it per item from your dashboard.</p>
+      </div>
+      <div style="background:var(--panel); padding:24px 28px;">
+        <h3 style="font-family:'Fraunces',Georgia,serif; font-size:17px; margin-bottom:8px;">Which stores and browsers does it support?</h3>
+        <p style="font-size:14px; line-height:1.65; color:var(--muted);">Any online store, in Chrome and other Chromium-based browsers — it works at the browser level, not per storefront.</p>
+      </div>
+      <div style="background:var(--panel); padding:24px 28px;">
+        <h3 style="font-family:'Fraunces',Georgia,serif; font-size:17px; margin-bottom:8px;">Is it free and open source?</h3>
+        <p style="font-size:14px; line-height:1.65; color:var(--muted);">Yes — free to use, source on GitHub, installable unpacked or built from source.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-tag"><span class="footer-ghost" aria-hidden="true">👻</span> ShadowCart — don't just buy it, shadow it.</div>
+    <div class="footer-links">
+      <a href="https://github.com/narwal4421/ShadowCart" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="vertical-align:-2px; margin-right:6px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+      <a href="https://shadow-cart.vercel.app" target="_blank" rel="noopener">shadow-cart.vercel.app</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll progress bar across the top of the page.
+  const scrollProgress = document.getElementById('scrollProgress');
+  const updateProgress = () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    scrollProgress.style.width = scrolled + '%';
+  };
+  window.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  // Click-ripple feedback on the primary/secondary buttons.
+  document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta').forEach(btn => {
+    btn.style.position = btn.style.position || 'relative';
+    btn.style.overflow = 'hidden';
+    btn.addEventListener('click', (e) => {
+      const r = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.style.position = 'absolute';
+      ripple.style.left = (e.clientX - r.left) + 'px';
+      ripple.style.top = (e.clientY - r.top) + 'px';
+      ripple.style.width = ripple.style.height = '8px';
+      ripple.style.marginLeft = ripple.style.marginTop = '-4px';
+      ripple.style.borderRadius = '50%';
+      ripple.style.background = 'rgba(255,255,255,0.45)';
+      ripple.style.pointerEvents = 'none';
+      ripple.style.transform = 'scale(0)';
+      ripple.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
+      btn.appendChild(ripple);
+      requestAnimationFrame(() => {
+        ripple.style.transform = 'scale(22)';
+        ripple.style.opacity = '0';
+      });
+      setTimeout(() => ripple.remove(), 650);
+    });
+  });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Page-load curtain: brief reveal so the whole page enters with intent.
+  const curtain = document.getElementById('curtain');
+  window.addEventListener('load', () => {
+    setTimeout(() => curtain.classList.add('is-hidden'), reduceMotion ? 0 : 350);
+  });
+
+  // Custom cursor dot.
+  const cursorDot = document.getElementById('cursorDot');
+  if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    window.addEventListener('mousemove', (e) => {
+      cursorDot.style.left = e.clientX + 'px';
+      cursorDot.style.top = e.clientY + 'px';
+      cursorDot.classList.add('is-active');
+    }, { passive:true });
+    document.querySelectorAll('a, button, .dossier-card, .protocol-step').forEach(el => {
+      el.addEventListener('mouseenter', () => cursorDot.classList.add('is-pointer'));
+      el.addEventListener('mouseleave', () => cursorDot.classList.remove('is-pointer'));
+    });
+  }
+
+  // Split the hero headline into words that fade/rotate in individually.
+  const h1 = document.querySelector('.hero h1');
+  if (h1 && !reduceMotion) {
+    const wrapWords = (node) => {
+      node.childNodes.forEach(child => {
+        if (child.nodeType === Node.TEXT_NODE && child.textContent.trim()) {
+          const frag = document.createDocumentFragment();
+          child.textContent.split(/(\s+)/).forEach(word => {
+            if (word.trim() === '') { frag.appendChild(document.createTextNode(word)); }
+            else {
+              const span = document.createElement('span');
+              span.className = 'char';
+              span.textContent = word;
+              frag.appendChild(span);
+            }
+          });
+          child.replaceWith(frag);
+        }
+      });
+    };
+    wrapWords(h1);
+    const chars = h1.querySelectorAll('.char');
+    chars.forEach((c, i) => { c.style.animationDelay = (0.55 + i * 0.05) + 's'; });
+  }
+
+  // Typewriter effect looping through fake URLs in the browser demo.
+  const fakeUrlText = document.getElementById('fakeUrlText');
+  if (fakeUrlText && !reduceMotion) {
+    const urls = ['shop.example.com/product/482', 'store.example.com/item/coat-119', 'market.example.com/sku/7734'];
+    let ui = 0, ci = 0, deleting = false;
+    const tick = () => {
+      const target = urls[ui];
+      if (!deleting) {
+        ci++;
+        fakeUrlText.textContent = target.slice(0, ci);
+        if (ci === target.length) { deleting = true; setTimeout(tick, 1400); return; }
+      } else {
+        ci--;
+        fakeUrlText.textContent = target.slice(0, ci);
+        if (ci === 0) { deleting = false; ui = (ui + 1) % urls.length; }
+      }
+      setTimeout(tick, deleting ? 25 : 55);
+    };
+    tick();
+  }
+
+  // Sparkle burst around the widget's highlighted mood option, timed with its pulse loop.
+  const selectedBtn = document.querySelector('.widget-grid button:nth-child(3)');
+  if (selectedBtn && !reduceMotion) {
+    const burst = () => {
+      const r = selectedBtn.getBoundingClientRect();
+      const stage = document.querySelector('.demo-stage');
+      const stageR = stage.getBoundingClientRect();
+      for (let i = 0; i < 6; i++) {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        s.style.left = (r.left - stageR.left + r.width / 2) + 'px';
+        s.style.top = (r.top - stageR.top + r.height / 2) + 'px';
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 16 + Math.random() * 18;
+        s.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+        s.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+        stage.appendChild(s);
+        setTimeout(() => s.remove(), 700);
+      }
+    };
+    setInterval(burst, 6000);
+    setTimeout(burst, 2650);
+  }
+
+  // 3D tilt on dossier cards, following the cursor within each card.
+  if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.dossier-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.setProperty('--rx', (px * 8) + 'deg');
+        card.style.setProperty('--ry', (-py * 8) + 'deg');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  // Nav shrinks slightly and gains a shadow once you scroll past the hero.
+  const navEl = document.querySelector('nav');
+  const backToTop = document.getElementById('backToTop');
+  const onScrollChrome = () => {
+    if (window.scrollY > 40) { navEl.classList.add('is-scrolled'); }
+    else { navEl.classList.remove('is-scrolled'); }
+    if (window.scrollY > 600) { backToTop.classList.add('is-visible'); }
+    else { backToTop.classList.remove('is-visible'); }
+  };
+  window.addEventListener('scroll', onScrollChrome, { passive:true });
+  onScrollChrome();
+  backToTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+  // Drifting ambient particles behind the whole page.
+  if (!reduceMotion) {
+    const particleField = document.getElementById('particles');
+    const count = window.innerWidth < 640 ? 10 : (window.innerWidth < 900 ? 16 : 22);
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = 2 + Math.random() * 4;
+      p.style.width = p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+      const duration = 14 + Math.random() * 18;
+      p.style.animationDuration = duration + 's';
+      p.style.animationDelay = (Math.random() * duration) + 's';
+      particleField.appendChild(p);
+    }
+  }
+
+  // Subtle parallax tilt on the hero demo stage, following the cursor.
+  const demoStage = document.querySelector('.demo-stage');
+  const fakePage = document.querySelector('.fake-page');
+  if (demoStage && fakePage && !reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    demoStage.addEventListener('mousemove', (e) => {
+      const r = demoStage.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      fakePage.style.transform = `rotateY(${px * 6}deg) rotateX(${-py * 6}deg)`;
+    });
+    demoStage.addEventListener('mouseleave', () => {
+      fakePage.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  // Stagger-reveal the case log entries once, as they enter view.
+  const logEntries = document.querySelectorAll('.log-entry');
+  if (reduceMotion) {
+    logEntries.forEach(el => el.classList.add('is-visible'));
+  } else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('is-visible'), i * 90);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    logEntries.forEach(el => io.observe(el));
+  } else {
+    logEntries.forEach(el => el.classList.add('is-visible'));
+  }
+
+  // Reveal sections / staggered groups as they scroll into view.
+  const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+  if (reduceMotion) {
+    revealEls.forEach(el => el.classList.add('is-in'));
+  } else if ('IntersectionObserver' in window) {
+    const revealIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          revealIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => revealIO.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('is-in'));
+  }
+
+  // Dossier card cursor-glow (skipped for touch / reduced-motion).
+  if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.dossier-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    });
+  }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#6c63ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#09090b"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="#232327" stroke-width="2"/>
+
+  <text x="80" y="150" font-family="Courier Prime, monospace" font-size="22" letter-spacing="2" fill="#6c63ff">CASE FILE 001 · OPEN INVESTIGATION</text>
+
+  <text x="78" y="270" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#f1f0f4">Don't buy it.</text>
+  <text x="78" y="352" font-family="Georgia, serif" font-size="72" font-weight="700" fill="#f1f0f4">Just <tspan fill="#6c63ff">shadow</tspan> it.</text>
+
+  <text x="80" y="430" font-family="Georgia, serif" font-size="26" fill="#87868f">A free, local-first browser extension that pauses impulse buys</text>
+  <text x="80" y="466" font-family="Georgia, serif" font-size="26" fill="#87868f">with a 48-hour cooling-off queue. No signup. No server.</text>
+
+  <text x="80" y="560" font-family="Courier Prime, monospace" font-size="24" fill="#f1f0f4">👻 ShadowCart</text>
+  <text x="290" y="560" font-family="Courier Prime, monospace" font-size="20" fill="#56565e">shadow-cart.vercel.app</text>
+</svg>
