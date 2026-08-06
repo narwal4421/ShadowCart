@@ -119,36 +119,22 @@ export default async function handler(req, res) {
 
     const emailData = {
       sender: {
-        name: process.env.FROM_NAME || 'ShadowCart Ghost',
+        name: process.env.FROM_NAME || 'ShadowCart',
         email: fromEmail
       },
       to: [
         { email: normalizedEmail }
       ],
-      subject: `Thinking about ${normalizedItem.name}? \uD83D\uDC7B`,
-      htmlContent: `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; color: #333; border: 1px solid #eaeaea;">
-          <p style="font-size: 16px; margin-top: 0;">Hey,</p>
-          <p style="font-size: 16px; line-height: 1.5;">You added some items to your cart earlier and they're still waiting for you.</p>
-          <p style="font-size: 16px; line-height: 1.5;">If you're still interested, you can complete your purchase anytime.</p>
-          
-          <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center;">
-            <h3 style="color: #333; margin: 0 0 10px 0;">${safeItemName}</h3>
-            <p style="color: #6c63ff; font-weight: bold; font-size: 18px; margin: 0;">${safeItemPrice}</p>
-          </div>
-
-          <a href="${safeProductUrl}" style="display: block; width: 100%; padding: 15px 0; background: #6c63ff; color: #fff; text-align: center; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-            View My Cart
-          </a>
-          
-          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eaeaea; font-size: 11px; color: #999; text-align: center;">
-            <p style="margin: 0 0 5px 0;">Sent with \u2764\ufe0f by ShadowCart Ghost</p>
-            <p style="margin: 0;">123 Ghost Street, Digital City, 00000</p>
-            <p style="margin: 10px 0 0 0;"><a href="#" style="color: #999; text-decoration: underline;">Unsubscribe from these alerts</a></p>
-          </div>
-        </div>
-      `,
-      textContent: `Hey,\n\nYou added some items to your cart earlier and they're still waiting for you.\n\nIf you're still interested, you can complete your purchase anytime.\n\nView My Cart: ${normalizedItem.productUrl}\n\nThanks for shopping with us!`
+      subject: `Your cooling-off period for "${normalizedItem.name}" just ended`,
+      htmlContent: `<div style="font-family: Arial, sans-serif; font-size: 15px; color: #222; max-width: 480px; line-height: 1.6;">
+<p>Hi,</p>
+<p>You added <strong>${safeItemName}</strong> (${safeItemPrice}) to your ShadowCart 48 hours ago.</p>
+<p>Your cooling-off period has ended. Do you still want it?</p>
+<p><a href="${normalizedItem.productUrl}" style="color: #6c63ff;">${normalizedItem.productUrl}</a></p>
+<p>If you've changed your mind, you can open ShadowCart and drop it from your list.</p>
+<p style="margin-top: 24px; color: #555;">— ShadowCart</p>
+</div>`,
+      textContent: `Hi,\n\nYou added "${normalizedItem.name}" (${normalizedItem.price}) to your ShadowCart 48 hours ago.\n\nYour cooling-off period has ended. Do you still want it?\n\n${normalizedItem.productUrl}\n\nIf you've changed your mind, open ShadowCart and drop it from your list.\n\n— ShadowCart`
     };
 
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
