@@ -125,16 +125,72 @@ export default async function handler(req, res) {
       to: [
         { email: normalizedEmail }
       ],
-      subject: `Your cooling-off period for "${normalizedItem.name}" just ended`,
-      htmlContent: `<div style="font-family: Arial, sans-serif; font-size: 15px; color: #222; max-width: 480px; line-height: 1.6;">
-<p>Hi,</p>
-<p>You added <strong>${safeItemName}</strong> (${safeItemPrice}) to your ShadowCart 48 hours ago.</p>
-<p>Your cooling-off period has ended. Do you still want it?</p>
-<p><a href="${normalizedItem.productUrl}" style="color: #6c63ff;">${normalizedItem.productUrl}</a></p>
-<p>If you've changed your mind, you can open ShadowCart and drop it from your list.</p>
-<p style="margin-top: 24px; color: #555;">— ShadowCart</p>
-</div>`,
-      textContent: `Hi,\n\nYou added "${normalizedItem.name}" (${normalizedItem.price}) to your ShadowCart 48 hours ago.\n\nYour cooling-off period has ended. Do you still want it?\n\n${normalizedItem.productUrl}\n\nIf you've changed your mind, open ShadowCart and drop it from your list.\n\n— ShadowCart`
+      subject: `Reminder: "${normalizedItem.name}" is ready for your decision`,
+      htmlContent: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 0;">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:4px;border:1px solid #e0e0e0;overflow:hidden;">
+
+        <!-- Header -->
+        <tr>
+          <td style="padding:24px 32px 20px;border-bottom:1px solid #eeeeee;">
+            <span style="font-size:16px;font-weight:700;color:#111111;letter-spacing:-0.3px;">👻 ShadowCart</span>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:28px 32px 8px;">
+            <p style="margin:0 0 16px;font-size:15px;color:#333333;line-height:1.6;">Hi,</p>
+            <p style="margin:0 0 20px;font-size:15px;color:#333333;line-height:1.6;">
+              Your 48-hour cooling-off period for the item below has ended. Time to make a call — do you still want it, or are you ready to let it go?
+            </p>
+          </td>
+        </tr>
+
+        <!-- Item card -->
+        <tr>
+          <td style="padding:0 32px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fafafa;border:1px solid #e8e8e8;border-radius:4px;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0 0 4px;font-size:13px;color:#888888;text-transform:uppercase;letter-spacing:0.5px;">Item saved</p>
+                  <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:#111111;">${safeItemName}</p>
+                  <p style="margin:0 0 12px;font-size:14px;color:#555555;">Price: <strong>${safeItemPrice}</strong></p>
+                  <a href="${normalizedItem.productUrl}" style="font-size:14px;color:#6c63ff;text-decoration:none;font-weight:500;">View item →</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- CTA text -->
+        <tr>
+          <td style="padding:0 32px 28px;">
+            <p style="margin:0 0 8px;font-size:14px;color:#555555;line-height:1.6;">
+              If you still want it, head to the link above and complete your purchase. If not, open ShadowCart and drop it — your wallet will thank you.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:20px 32px;border-top:1px solid #eeeeee;background:#fafafa;">
+            <p style="margin:0;font-size:12px;color:#999999;line-height:1.6;">
+              This is an automated reminder from ShadowCart, the mindful shopping extension you installed. You're receiving this because you enabled email reminders for this item.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+      textContent: `Hi,\n\nYour 48-hour cooling-off period for "${normalizedItem.name}" has ended.\n\nItem: ${normalizedItem.name}\nPrice: ${normalizedItem.price}\nLink: ${normalizedItem.productUrl}\n\nIf you still want it, head to the link above. If not, open ShadowCart and drop it.\n\n— ShadowCart`
     };
 
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
